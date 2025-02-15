@@ -27,6 +27,12 @@ public class WalletController {
         this.restTemplate = new RestTemplate();
     }
 
+    @GetMapping("/wallets")
+    public ResponseEntity<?> findAll() {
+        List<Wallet> wallets = walletRepository.findAll();
+        return ResponseEntity.ok().body(wallets);
+    }
+
     @GetMapping("/wallets/{user_id}")
     public ResponseEntity<?> findByUserId(@PathVariable Integer user_id) {
         List<Wallet> wallets = walletRepository.findByUserId(user_id);
@@ -58,11 +64,11 @@ public class WalletController {
     @PutMapping("/wallets/{user_id}")
     public ResponseEntity<?> updateWalletBalance(@PathVariable Integer user_id, @RequestBody Map<String, String> wallet) {
 
-        boolean userExists = getUserById(user_id);
-        System.out.println("EXISTS: " + userExists);
-        if (!userExists) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(userExistsNot(user_id));
-        }
+//        boolean userExists = getUserById(user_id);
+//        System.out.println("EXISTS: " + userExists);
+//        if (!userExists) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(userExistsNot(user_id));
+//        }
 
         List<Wallet> wallets = walletRepository.findByUserId(user_id);
         if (wallets.isEmpty()) {
@@ -70,7 +76,8 @@ public class WalletController {
             wallet_.setBalance(0);
             wallet_.setUser_id(user_id); /* this user must exist */
             walletRepository.save(wallet_);
-            return ResponseEntity.status(HttpStatus.OK).body(wallet_);
+            wallets = walletRepository.findByUserId(user_id);
+//            return ResponseEntity.status(HttpStatus.OK).body(wallet_);
         }
 
         boolean validPayload =  wallet != null && wallets.size() > 0;
@@ -124,11 +131,10 @@ public class WalletController {
     public ResponseEntity<?> deleteWallets() {
         List<Wallet> wallets = walletRepository.findAll();
         if (wallets.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(walletsExistNot());
+            return ResponseEntity.status(HttpStatus.OK).body(walletsDeletedSuccessfully());
         }
 
-        walletRepository.deleteAll(); /* the user has to be deleted too */
-
+        walletRepository.deleteAll(); /* the user has to be deleted too ?*/
         return ResponseEntity.status(HttpStatus.OK).body(walletsDeletedSuccessfully());
     }
 
