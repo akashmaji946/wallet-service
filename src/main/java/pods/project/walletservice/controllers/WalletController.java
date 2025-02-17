@@ -3,6 +3,7 @@ package pods.project.walletservice.controllers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClientException;
@@ -20,6 +21,9 @@ public class WalletController {
     private static final Log log = LogFactory.getLog(WalletController.class);
     private final WalletRepository walletRepository;
     private final RestTemplate restTemplate;
+
+    @Value("${host.url}")
+    String localhost;
 
     @Autowired
     public WalletController(WalletRepository walletRepository) {
@@ -163,7 +167,7 @@ public class WalletController {
     }
 
     public boolean getUserById2(Integer user_id) {
-        String url = "http://localhost:8080/users/" + user_id;
+        String url = "http://" + localhost +":8080/users/" + user_id;
         Map<Object, Object> map = null;
         try {
             map = restTemplate.getForObject(url, Map.class);
@@ -174,7 +178,7 @@ public class WalletController {
     }
 
     public boolean getUserById(Integer user_id) {
-        String url = "http://localhost:8080/users/" + user_id;
+        String url = "http://" + localhost +":8080/users/" + user_id;
 //
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.setContentType(MediaType.APPLICATION_JSON);
